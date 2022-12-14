@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import {gapi} from "gapi-script"
 import * as Ons from "react-onsenui";
+import LoginButton from "./components/login"
+import LogoutButton from "./components/logout"
 import "onsenui/css/onsenui.css";
 import "onsenui/css/onsen-css-components.css";
 
@@ -10,12 +12,21 @@ import aes from 'crypto-js/aes';
 const spreadsheetID = "1SI1vuW0HQUveqiKPT1Jjr_A471W02Co0OXVcp2zyeO0";
 let sheetName = ""  // SHEET NAME
 let sheetID = 0;  // SHEET ID
-const CLIENT_ID ="393048546212-rbmdqi89tvb3kp71vpjhdin250f9294t.apps.googleusercontent.com"
-const API_KEY="AIzaSyCiGSF38_pEuSO1wVM9T8BQS4yFlvzZQW0"
+const CLIENT_ID=
+const API_KEY=
 const SCOPES="https://www.googleapis.com/auth/spreadsheets"
 // Our main component
 const App = () => {
-
+    useEffect(() =>{
+        function start(){ 
+            gapi.client.init({
+                apiKey: API_KEY, 
+                clientId: CLIENT_ID, 
+                scope: SCOPES
+            })
+        };
+        gapi.load('client:auth2', start)
+    })
     // Name, guild, and section states that updates everytime QR Code is scanned
     let [name, setName] = useState("");
     let [studentNumber, setStudentNumber] = useState("");
@@ -41,16 +52,7 @@ const App = () => {
 
     let sections;
 
-    useEffect(() =>{
-        function start(){ 
-            gapi.client.init({
-                apiKey: API_KEY, 
-                clientId: CLIENT_ID, 
-                scope: SCOPES
-            })
-        };
-        gapi.load('client:auth2', start)
-    })
+
     let updateAttendance = async (attName, section, guild) => {
         var accessToken = gapi.auth.getToken().access_token;
         // Name Index: Position of the Student's name in the Google Sheet
@@ -243,7 +245,7 @@ const App = () => {
         // Start reader using back camera
         html5QrCode
             .start(
-                { facingMode: "environment" },
+                { facingMode: "user" },
                 config,
                 (text, result) => {
                     // Parse QR Code content and update our states
@@ -293,7 +295,8 @@ const App = () => {
                         </Ons.ToolbarButton>
 
                         <span id="toolbar-title">Lista</span>
-
+                        <LoginButton></LoginButton>
+                        <LogoutButton></LogoutButton>
                     </div>
                 </div>
             </Ons.Toolbar>
